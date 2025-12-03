@@ -480,10 +480,14 @@ RSpec.describe Systemd::Journal do
   describe "message" do
     it "escapes percent signs in messages" do
       expect(Systemd::Journal::Native).to receive(:sd_journal_send)
-        .with(:string, "MESSAGE=hello %% world %%", :string, nil)
+        .with("MESSAGE=hello %% world %%", nil)
         .and_return(0)
 
       Systemd::Journal.message(message: "hello % world %")
+    end
+
+    it "sends message to journal" do
+      Systemd::Journal.message(message: "test message")
     end
   end
 
@@ -494,6 +498,10 @@ RSpec.describe Systemd::Journal do
         .and_return(0)
 
       Systemd::Journal.print(Systemd::Journal::LOG_DEBUG, "hello % world %")
+    end
+
+    it "prints to journal" do
+      Systemd::Journal.print(Systemd::Journal::LOG_DEBUG, "hello world !")
     end
   end
 end

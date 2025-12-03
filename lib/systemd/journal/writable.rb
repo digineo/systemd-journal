@@ -73,13 +73,13 @@ module Systemd
         # write an event to the systemd journal.
         # @param [Hash] contents the set of key-value pairs defining the event.
         def message(contents)
-          items = contents.flat_map do |k, v|
+          items = contents.map do |k, v|
             value = v.to_s.gsub("%", "%%")
-            [:string, "#{k.to_s.upcase}=#{value}"]
+            "#{k.to_s.upcase}=#{value}"
           end
+
           # add a null pointer to terminate the varargs
-          items += [:string, nil]
-          rc = Native.sd_journal_send(*items)
+          rc = Native.sd_journal_send(*items, nil)
           raise JournalError, rc if rc < 0
         end
       end
